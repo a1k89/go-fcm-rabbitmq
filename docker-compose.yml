@@ -8,5 +8,7 @@ services:
     restart: always
     ports:
       - "8002:8002"
+    env_file:
+      - .env
     environment:
       - AMQP_CONN=amqp://guest:guest@host.docker.internal:5672/
