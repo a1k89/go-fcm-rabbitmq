@@ -16,6 +16,11 @@ func SendPush(message models.MessageIn){
 				Title:        message.Title,
 				Body:         message.Body,
 				Sound:        "default",
+
+			},
+			Data: map[string]interface{}{
+				"extra_uid":message.ExtraUID,
+				"action": message.Action,
 			},
 		}
 
