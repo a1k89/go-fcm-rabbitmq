@@ -3,9 +3,13 @@ package consumer
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/appleboy/go-fcm"
 	"github.com/streadway/amqp"
 	"log"
 	"notify/firebase"
+
+	//"notify/firebase"
+	//"notify/models"
 	"notify/models"
 	"os"
 )
@@ -47,26 +51,27 @@ func StartConsumeFromMainChannel() {
 	if err != nil {
 		CreateError(err, "Can't consume")
 	}
-
+	client, err := fcm.NewClient(os.Getenv("FCM_API_KEY"))
+	if err != nil {
+		fmt.Print("FCM credentials is not correct")
+		return
+	}
 	forever := make(chan bool)
-	go parseAndGo(msg)
-	log.Print("Start listening from rabbitmq")
+	go func() {
+		for d := range msg {
+			var payload models.MessageIn
+			err := json.Unmarshal(d.Body, &payload)
+			if err != nil {
+				fmt.Print("Can't parse message from rabbitmq")
+				return
+			}
+			firebase.SendPush(payload, *client)
+		}
+	}()
+	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
 	<-forever
 }
 
 func CreateError(err error, msg string) {
 	log.Fatal(err, msg)
-}
-
-func parseAndGo(msg <-chan amqp.Delivery) {
-	for d := range msg {
-		var payload models.MessageIn
-		err := json.Unmarshal(d.Body, &payload)
-		if err != nil {
-			fmt.Print("Can't parse message from rabbitmq")
-			return
-		}
-		//log.Printf("response:\n", payload.FcmTokens)
-		firebase.SendPush(payload)
-	}
 }

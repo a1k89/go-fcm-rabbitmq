@@ -1,20 +1,22 @@
-############################
-# STEP 1 build executable binary
-############################
+FROM golang:alpine
 
-FROM golang:alpine as builder
+ENV GO111MODULE=on\
+    CGO_ENABLED=0\
+    GOOS=linux\
+    COARCH=amd64
 
-RUN apk update && apk add --no-cache git
-WORKDIR /home/a1
-COPY . /home/a1
-RUN go get -d -v
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /home/a1/main
+WORKDIR /build
 
-############################
-# STEP 2 build a small image
-############################
-FROM scratch
-WORKDIR /home/a1
-COPY --from=builder /home/a1/main /home/a1/main
-COPY .env /home/a1
-ENTRYPOINT ["/home/a1/main"]
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+
+COPY . .
+RUN go build -o main .
+
+WORKDIR /dist
+RUN cp /build/main .
+COPY .env .
+EXPOSE 3000
+
+CMD ["/dist/main"]
