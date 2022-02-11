@@ -66,7 +66,7 @@ func parseAndGo(msg <-chan amqp.Delivery) {
 			fmt.Print("Can't parse message from rabbitmq")
 			return
 		}
-		log.Printf("response:\n", payload.FcmTokens)
+		//log.Printf("response:\n", payload.FcmTokens)
 		go firebase.SendPush(payload)
 	}
 }
