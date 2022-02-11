@@ -10,7 +10,7 @@ import (
 
 func SendPush(message models.MessageIn){
 	// Create message first
-	log.Printf("Send push...", message)
+	//log.Printf("Send push...", message)
 
 	for _, token := range message.FcmTokens {
 		msg := &fcm.Message{
