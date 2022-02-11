@@ -5,10 +5,13 @@ import (
 	"github.com/appleboy/go-fcm"
 	"notify/models"
 	"os"
+	"log"
 )
 
 func SendPush(message models.MessageIn){
 	// Create message first
+	log.Printf("Send push...", message)
+
 	for _, token := range message.FcmTokens {
 		msg := &fcm.Message{
 			To: token,
