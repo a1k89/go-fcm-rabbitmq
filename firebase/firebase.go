@@ -5,7 +5,6 @@ import (
 	"github.com/appleboy/go-fcm"
 	"notify/models"
 	"os"
-	"log"
 )
 
 func SendPush(message models.MessageIn){
