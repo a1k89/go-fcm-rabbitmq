@@ -67,6 +67,6 @@ func parseAndGo(msg <-chan amqp.Delivery) {
 			return
 		}
 		//log.Printf("response:\n", payload.FcmTokens)
-		go firebase.SendPush(payload)
+		firebase.SendPush(payload)
 	}
 }
